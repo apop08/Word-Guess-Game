@@ -26,19 +26,34 @@
       var indexes = [], i = -1;
       while ((i = arr.indexOf(val, i+1)) != -1){
         indexes.push(i);
+      }
+      return indexes;
     }
-    return indexes;
-}
-
+    function writeOutput(){
+      concatFeedback = "";
+      for(let j = 0; j < feedback.length; j++)
+      {
+        concatFeedback += feedback[j];
+      }
+      if(checkWin())
+      {
+        ++wins;
+      }
+      document.getElementById("game").innerHTML = concatFeedback + " " + String(wins);
+    }
+    function checkWin(){
+      if(concatFeedback == word)
+      {
+        return true;
+      }
+      return false;
+    }
     for(let i = 0; i < word.length; i++)
     {
       feedback.push("_");
     }
-    for(let j = 0; j < feedback.length; j++)
-    {
-      concatFeedback += feedback[j];
-    }
-    document.getElementById("game").innerHTML = concatFeedback;
+    
+    writeOutput();
     // listen for user input
     document.onkeyup = function(event) {
 
@@ -55,12 +70,8 @@
         {
           feedback[indexes[i]] = userInput;
         }
-        concatFeedback = "";
-        for(let j = 0; j < feedback.length; j++)
-        {
-          concatFeedback += feedback[j];
-        }
-        document.getElementById("game").innerHTML = concatFeedback;
+        
+        writeOutput();
       }
     };
   </script>
