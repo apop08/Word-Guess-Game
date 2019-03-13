@@ -1,1 +1,70 @@
-{\rtf1}
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Rock Paper Scissors
+  </title>
+</head>
+
+<body>
+
+  <div id="game">
+    <p> Press r,p, or s to start playing! <br> First to 5 wins!</p>
+  </div>
+
+  <script type="text/javascript">
+    //initialize game stats to 0
+    var wins = 0, losses = 0, ties = 0;
+    // array of all possible inputs
+    var word = "apple";
+    var feedback = [];
+    var playerGuesses = "";
+    var concatFeedback = ""
+
+    function getAllIndexes(arr, val) {
+      var indexes = [], i = -1;
+      while ((i = arr.indexOf(val, i+1)) != -1){
+        indexes.push(i);
+    }
+    return indexes;
+}
+
+    for(let i = 0; i < word.length; i++)
+    {
+      feedback.push("_");
+    }
+    for(let j = 0; j < feedback.length; j++)
+    {
+      concatFeedback += feedback[j];
+    }
+    document.getElementById("game").innerHTML = concatFeedback;
+    // listen for user input
+    document.onkeyup = function(event) {
+
+      // extract user input
+      var userInput = event.key;
+
+      // includes checks if string that method is called on is in the array provided as input
+      // limits the input to only valid throws
+      if(word.includes(userInput) && !(playerGuesses.includes(userInput)))
+      {
+        playerGuesses += userInput;
+        var indexes = getAllIndexes(word, userInput);
+        for(let i in indexes)
+        {
+          feedback[indexes[i]] = userInput;
+        }
+        concatFeedback = "";
+        for(let j = 0; j < feedback.length; j++)
+        {
+          concatFeedback += feedback[j];
+        }
+        document.getElementById("game").innerHTML = concatFeedback;
+      }
+    };
+  </script>
+
+</body>
+
+</html>
