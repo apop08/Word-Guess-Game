@@ -32,19 +32,6 @@
 
   <script type="text/javascript">
     //initialize game stats to 0
-    var wins = 0, losses = 0, guessLeft = 0;
-    // array of all possible inputs
-    var word = "";
-    var feedback = [];
-    var playerGuesses = "";
-    var concatFeedback = ""
-    var play = 0;
-    var possibleWords = [];
-    function loadWords()
-    {
-      possibleWords = ["cloud", "barret", "tifa", "aerith", "sephiroth", "yuffie", "vincent"]
-    }
-    loadWords();
 
     function getAllIndexes(arr, val) {
       var indexes = [], i = -1;
@@ -55,10 +42,10 @@
     }
 
     function updateGuess(){
-      concatFeedback = "";
-      for(let j = 0; j < feedback.length; j++)
+      ff7Game.concatFeedback = "";
+      for(let j = 0; j < ff7Game.feedback.length; j++)
       {
-        concatFeedback += feedback[j];
+        ff7Game.concatFeedback += ff7Game.feedback[j];
       }
     }
 
@@ -71,121 +58,135 @@
 
     function writeWord2Guess(){
       var output = "";
-      for(let i in concatFeedback)
+      for(let i in ff7Game.concatFeedback)
       {
-        output += concatFeedback[i] + " ";
+        output += ff7Game.concatFeedback[i] + " ";
       }
-      document.getElementById("game").innerHTML = output + " " + String(wins);
+      document.getElementById("game").innerHTML = output + " " + String(ff7Game.wins);
     }
 
     function writeWin(){    
       document.getElementById("game").innerHTML = "You Win! Press any key to restart" + "<br>" + 
-                                                  "The word was: " + word;
+                                                  "The word was: " + ff7Game.word;
     }
 
     function writeLoss(){    
       document.getElementById("game").innerHTML = "You Lose! Press any key to restart" + "<br>" + 
-                                                  "The word was: " + word;
+                                                  "The word was: " + ff7Game.word;
     }
 
     function writePlayerGuesses(){      
-      document.getElementById("guesses").innerHTML = playerGuesses;
-      document.getElementById("misses").innerHTML = "Misses left: " + String(guessLeft);
+      document.getElementById("guesses").innerHTML = ff7Game.playerGuesses;
+      document.getElementById("misses").innerHTML = "Misses left: " + String(ff7Game.guessLeft);
     }
 
     function writeStats(){   
-      document.getElementById("stats").innerHTML = "Wins: " + String(wins) + "  Losses: " + String(losses);
+      document.getElementById("stats").innerHTML = "Wins: " + String(ff7Game.wins) + "  Losses: " + String(ff7Game.losses);
     }
 
     function checkWin(){
-      if(concatFeedback == word)
+      if(ff7Game.concatFeedback == ff7Game.word)
       {
         return true;
       }
       return false;
     }
+
     function checkLoss(){
-      if(guessLeft == 0)
+      if(ff7Game.guessLeft == 0)
       {
         return true;
       }
       return false;
     }
+    
     function getNewWord()
     {
-      return possibleWords[Math.floor(Math.random() * possibleWords.length)]
+      return ff7Game.possibleWords[Math.floor(Math.random() * ff7Game.possibleWords.length)];
     }
     
     function initGame(){
 
-      word = getNewWord();
-      feedback = [];
-      for(let i = 0; i < word.length; i++)
+      ff7Game.word = getNewWord();
+      ff7Game.feedback = [];
+      for(let i = 0; i < ff7Game.word.length; i++)
       {
-        feedback.push("_");
+        ff7Game.feedback.push("_");
       }
-      playerGuesses = "";
-      concatFeedback = ""
+      ff7Game.playerGuesses = "";
+      ff7Game.concatFeedback = "";
 
-      guessLeft = 5;
-      play = 1;
+      ff7Game.guessLeft = 5;
+      ff7Game.play = 1;
     }
     
-
+    function draw(){
+      writeWord2Guess();
+      writePlayerGuesses();
+      writeStats();
+    }
     
-    
+    var ff7Game = {
+      wins : 0,
+      losses : 0,
+      guessLeft : 0,
+      word : "",
+      feedback : [],
+      playerGuesses : "",
+      concatFeedback : "",
+      play : 0,
+      possibleWords : ["cloud", "barret", "tifa", "aerith", "sephiroth", "yuffie", "vincent"]
+    };
     // listen for user input
     document.onkeyup = function(event) {
       var userInput = event.key;
-      if(play == 0)
+      if(ff7Game.play == 0)
       {
         initGame();
       }
-      // extract user input
-     
-    
-      // includes checks if string that method is called on is in the array provided as input
-      // limits the input to only valid throws
-      if(!(playerGuesses.includes(userInput)) && play == 1)
+
+      if(!(ff7Game.playerGuesses.includes(userInput)) && ff7Game.play == 1 &&
+          event.keyCode >= 65 && event.keyCode <= 90)
       {
-        playerGuesses += userInput + " ";
-        if(word.includes(userInput))
+        ff7Game.playerGuesses += userInput + " ";
+        if(ff7Game.word.includes(userInput))
         {
           
-          var indexes = getAllIndexes(word, userInput);
+          var indexes = getAllIndexes(ff7Game.word, userInput);
           for(let i in indexes)
           {
-            feedback[indexes[i]] = userInput;
+            ff7Game.feedback[indexes[i]] = userInput;
           }
 
           updateGuess();
 
           if(checkWin())
           {
-            ++wins;
-            play = 3
+            ++ff7Game.wins;
+            ff7Game.play = 3
           }
           
           
         }
         else{
-          --guessLeft;
+          --ff7Game.guessLeft;
           if(checkLoss())
           {
-            ++losses;
-            play = 2;
+            ++ff7Game.losses;
+            ff7Game.play = 2;
           }
         }
+        
         updateGuess();
-        writeWord2Guess();
-        writePlayerGuesses();
-        writeStats();
+
+        draw();
+        
       }
 
-      if(play != 1)
+      if(ff7Game.play != 1)
       {
         clearScreen();
-        if(play == 3)
+        if(ff7Game.play == 3)
         {
           writeWin();
         }
@@ -194,7 +195,7 @@
           writeLoss();
         }
         writeStats();
-        play = 0;
+        ff7Game.play = 0;
       }
     };
   </script>
@@ -202,3 +203,4 @@
 </body>
 
 </html>
+
