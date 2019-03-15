@@ -3,15 +3,17 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Rock Paper Scissors
+  <title>FF7 char guesser
   </title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="assets/css/style.css">
+
 </head>
 
 <body>
   <div class="container">
     <div class="jumbotron">
-      <h1 class="display-4">Guess the final fantasy 7 character</h1>
+      <h1 class="display-4">Guess the Final Fantasy 7 Character</h1>
     
       <div id="game">
         <h3> Press any key to begin!</h3>
@@ -31,16 +33,18 @@
   
 
   <script type="text/javascript">
-    //initialize game stats to 0
-
+    
+    //function to find the all indexes of a given array
     function getAllIndexes(arr, val) {
       var indexes = [], i = -1;
-      while ((i = arr.indexOf(val, i+1)) != -1){
+      //when it runs out of indexes to find it returns -1
+      while ((i = arr.indexOf(val, i + 1)) != -1){
         indexes.push(i);
       }
       return indexes;
     }
 
+    //write to the string that goes to the output
     function updateGuess(){
       ff7Game.concatFeedback = "";
       for(let j = 0; j < ff7Game.feedback.length; j++)
@@ -49,41 +53,48 @@
       }
     }
 
+    //empty the strings on the screen
     function clearScreen(){
       document.getElementById("game").innerHTML = ""; 
       document.getElementById("guesses").innerHTML = "";
       document.getElementById("misses").innerHTML = "";
       document.getElementById("stats").innerHTML = "";
     }
-
+    
+    //writes the guessing word to the screen
     function writeWord2Guess(){
       var output = "";
       for(let i in ff7Game.concatFeedback)
       {
         output += ff7Game.concatFeedback[i] + " ";
       }
-      document.getElementById("game").innerHTML = output + " " + String(ff7Game.wins);
+      document.getElementById("game").innerHTML = output;
     }
 
+    //writes the winner message
     function writeWin(){    
       document.getElementById("game").innerHTML = "You Win! Press any key to restart" + "<br>" + 
                                                   "The word was: " + ff7Game.word;
     }
 
+    //writes the loser message
     function writeLoss(){    
       document.getElementById("game").innerHTML = "You Lose! Press any key to restart" + "<br>" + 
                                                   "The word was: " + ff7Game.word;
     }
 
+    //writes the letters guessed and misses left to screen
     function writePlayerGuesses(){      
       document.getElementById("guesses").innerHTML = ff7Game.playerGuesses;
       document.getElementById("misses").innerHTML = "Misses left: " + String(ff7Game.guessLeft);
     }
 
+    //writes out wins and losses to screen
     function writeStats(){   
       document.getElementById("stats").innerHTML = "Wins: " + String(ff7Game.wins) + "  Losses: " + String(ff7Game.losses);
     }
 
+    //check for win conditions
     function checkWin(){
       if(ff7Game.concatFeedback == ff7Game.word)
       {
@@ -92,6 +103,7 @@
       return false;
     }
 
+    //check for loss conditions
     function checkLoss(){
       if(ff7Game.guessLeft == 0)
       {
@@ -100,11 +112,13 @@
       return false;
     }
     
+    //randomly grab new word from list
     function getNewWord()
     {
       return ff7Game.possibleWords[Math.floor(Math.random() * ff7Game.possibleWords.length)];
     }
     
+    //initialize the game variables
     function initGame(){
 
       ff7Game.word = getNewWord();
@@ -120,12 +134,14 @@
       ff7Game.play = 1;
     }
     
+    //calls the correct draw functions
     function draw(){
       writeWord2Guess();
       writePlayerGuesses();
       writeStats();
     }
     
+    //game object
     var ff7Game = {
       wins : 0,
       losses : 0,
@@ -139,27 +155,32 @@
     };
     // listen for user input
     document.onkeyup = function(event) {
-      var userInput = event.key;
+      //reduce to only lowercase
+      var userInput = event.key.toLowerCase();
+      //initialize game on first key press
       if(ff7Game.play == 0)
       {
         initGame();
       }
 
+      //look for letters not pressed before
       if(!(ff7Game.playerGuesses.includes(userInput)) && ff7Game.play == 1 &&
           event.keyCode >= 65 && event.keyCode <= 90)
       {
+        //add player guess
         ff7Game.playerGuesses += userInput + " ";
+        //if the letter exists in word
         if(ff7Game.word.includes(userInput))
         {
-          
+          //for every instance in the word update the feedback
           var indexes = getAllIndexes(ff7Game.word, userInput);
           for(let i in indexes)
           {
             ff7Game.feedback[indexes[i]] = userInput;
           }
-
+          //update the guess string
           updateGuess();
-
+          //look for wins
           if(checkWin())
           {
             ++ff7Game.wins;
@@ -169,23 +190,26 @@
           
         }
         else{
+          //letter isnt in the word dec guesses left
           --ff7Game.guessLeft;
+          //look for loss
           if(checkLoss())
           {
             ++ff7Game.losses;
             ff7Game.play = 2;
           }
         }
-        
+        //update guess no matter what
         updateGuess();
-
+        //write to screen
         draw();
         
       }
-
+      //if the player won or loss
       if(ff7Game.play != 1)
       {
         clearScreen();
+        
         if(ff7Game.play == 3)
         {
           writeWin();
